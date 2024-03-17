@@ -1,0 +1,9 @@
+langchain
+langchain-core
+langchain_openai
+numpy
+pandas
+python-dotenv
+streamlit
+# streamlit-component-lib
+pydantic
