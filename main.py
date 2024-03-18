@@ -49,7 +49,7 @@ if api_key_valid:
     if user_input:
         with col1:
             st.write(f"Great! Let's plan your trip!.")
-            output[itinerary_config.chain_output_key].replace("$", "\$")
+            output[itinerary_config.chain_output_key] = output[itinerary_config.chain_output_key].replace("$", "\$")
             st.write(output[itinerary_config.chain_output_key])
         is_valid = json.loads(output[validation_config.chain_output_key])[
             validation_config.system_prompt_output_key
