@@ -28,7 +28,9 @@ st.markdown(
 # Get your openai api key
 openai_url = "https://platform.openai.com/api-keys"
 st.caption("[Get your OpenAI API key.](%s)" % openai_url)
-api_key = st.text_input("Input your API key", type="password")
+api_key = st.text_input(
+    "Login and click on create new key. Input the API key generated.", type="password"
+)
 os.environ["OPENAI_API_KEY"] = api_key
 api_key_valid = is_api_key_valid(api_key)
 
@@ -40,7 +42,12 @@ if api_key_valid:
 
     # Initialize
     with col1:
-        st.subheader("Where do you want to travel next?")
+        st.write("Where do you want to travel next?")
+        st.write(
+            '<span style="color:grey">Do include how many days you want to travel for and under what budget, let me help you! An example prompt can look like \n "Travel to sf for 2 days under 300\$"</span>',
+            unsafe_allow_html=True,
+        )
+
         user_input = st.text_input("")
 
     output = itin_chain({"query": user_input})
@@ -49,7 +56,9 @@ if api_key_valid:
     if user_input:
         with col1:
             st.write(f"Great! Let's plan your trip!.")
-            output[itinerary_config.chain_output_key] = output[itinerary_config.chain_output_key].replace("$", "\$")
+            output[itinerary_config.chain_output_key] = output[
+                itinerary_config.chain_output_key
+            ].replace("$", "\$")
             st.write(output[itinerary_config.chain_output_key])
         is_valid = json.loads(output[validation_config.chain_output_key])[
             validation_config.system_prompt_output_key
