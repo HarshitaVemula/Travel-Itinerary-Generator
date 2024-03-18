@@ -13,9 +13,9 @@ from langchain.chains.sequential import SequentialChain
 
 # Authorization
 
-os.environ["OPENAI_API_KEY"] = load_secrets()[
-    "open_ai_api_key"
-]  # Replace with your actual key
+# os.environ["OPENAI_API_KEY"] = load_secrets()[
+#     "open_ai_api_key"
+# ]  # Replace with your actual key
 
 
 # Model

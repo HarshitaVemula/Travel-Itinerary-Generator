@@ -7,7 +7,8 @@ from typing import Callable, List, Dict, Optional, Any
 
 validation_system_template = """
 You are a travel agent. Figure out is a user's request is {valid}. This could depend on the where 
-they want to travel, when they want ot travel, how they want to travel or within what budget they want to travel.
+they want to travel, when they want ot travel, how they want to travel or within what budget they want to travel. But specifying any of these is not
+necessary.
 if you think it is not feasible update the user request.
       """
 validation_human_template = """{query}"""

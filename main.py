@@ -1,50 +1,82 @@
 import streamlit as st
+import os
 from streamlit_folium import st_folium
 import folium
-from geopy.geocoders import Nominatim
-import pandas as pd
-import numpy as np
-from prompts import itin_chain, locations_chain, coord_chain
-from templates import itinerary_config, locations_config, coordinates_config
 import json
+from langchain_openai import ChatOpenAI
 
 st.set_page_config(layout="wide")
-st.title("Travel Itinerary Generator")
 
+
+def is_api_key_valid(api_key):
+    try:
+        response = ChatOpenAI(temperature=0).predict("This is a test prompt.")
+    except Exception as e:
+        if len(api_key) > 0:
+            st.write("Invalid API key")
+        return False
+    else:
+        return True
+
+
+# st.title("Travel Itinerary Generator")
+st.markdown(
+    "<h1 style='text-align: center; color: black;'>Travel Itinerary Generator</h1>",
+    unsafe_allow_html=True,
+)
+
+# Get your openai api key
+openai_url = "https://openai.com/blog/openai-api"
+st.caption("[Get your OpenAI API key.](%s)" % openai_url)
+api_key = st.text_input("Input your API key", type="password")
+os.environ["OPENAI_API_KEY"] = api_key
+api_key_valid = is_api_key_valid(api_key)
 
 col1, col2 = st.columns(2)
 
-# Initialize
-user_input = col1.text_input("Where do you want to travel next?")
+if api_key_valid:
+    from prompts import itin_chain, coord_chain
+    from templates import itinerary_config, coordinates_config, validation_config
 
-output = itin_chain({"query": user_input})
-
-with col1:
-    print()
-
-
-# col1
-if user_input:
+    # Initialize
     with col1:
-        st.write(f"Great! Let's plan your trip!.")
-        output[itinerary_config.chain_output_key].replace("$", "\$")
-        st.write(output[itinerary_config.chain_output_key])
+        st.subheader("Where do you want to travel next?")
+        user_input = st.text_input("")
 
-        coord = coord_chain(
-            {
-                itinerary_config.chain_output_key: output[
-                    itinerary_config.chain_output_key
-                ]
-            }
-        )
-        coord = json.loads(coord["locations_coord"])
-        coord = coord["locations_coord"]
+    output = itin_chain({"query": user_input})
 
-        locations = list(coord.keys())
+    # col1
+    if user_input:
+        with col1:
+            st.write(f"Great! Let's plan your trip!.")
+            output[itinerary_config.chain_output_key].replace("$", "\$")
+            st.write(output[itinerary_config.chain_output_key])
+        is_valid = json.loads(output[validation_config.chain_output_key])[
+            validation_config.system_prompt_output_key
+        ]
 
-        m = folium.Map(location=coord[locations[0]], zoom_start=12)
-        for k in locations[1:20]:
-            folium.Marker(coord[k], popup=k, tooltip=k).add_to(m)
+        if is_valid == str(1):
+            coord = coord_chain(
+                {
+                    itinerary_config.chain_output_key: output[
+                        itinerary_config.chain_output_key
+                    ]
+                }
+            )
+            coord = json.loads(coord[coordinates_config.system_prompt_output_key])
+            coord = coord[coordinates_config.chain_output_key]
 
-        with col2:
-            map_data = st_folium(m, width=725, returned_objects=[])
+            locations = list(coord.keys())
+
+            m = folium.Map(location=coord[locations[0]], zoom_start=12)
+            for k in locations[1:20]:
+                folium.Marker(coord[k], popup=k, tooltip=k).add_to(m)
+
+            with col2:
+                st.text("")
+                st.text("")
+                st.text("")
+                st.text("")
+                st.text("")
+                st.text("")
+                map_data = st_folium(m, width=725, returned_objects=[])
