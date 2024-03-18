@@ -26,7 +26,7 @@ st.markdown(
 )
 
 # Get your openai api key
-openai_url = "https://openai.com/blog/openai-api"
+openai_url = "https://platform.openai.com/api-keys"
 st.caption("[Get your OpenAI API key.](%s)" % openai_url)
 api_key = st.text_input("Input your API key", type="password")
 os.environ["OPENAI_API_KEY"] = api_key
