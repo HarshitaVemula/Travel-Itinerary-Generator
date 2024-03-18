@@ -7,3 +7,10 @@ python-dotenv
 streamlit
 # streamlit-component-lib
 pydantic
+Flask 
+# Flask-ReactPy
+reactpy[flask]
+gunicorn
+folium
+streamlit_folium
+geopy
